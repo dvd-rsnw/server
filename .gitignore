@@ -1,0 +1,53 @@
+# Byte-compiled / optimized / compiled Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+env/
+venv/
+ENV/
+.venv/
+
+# Logs
+*.log
+*.out
+*.err
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Raspberry Pi-specific files
+*.elf
+*.img
+*.dtb
+*.bak
+*.swp
+*.tmp
+
+# IDE-specific files
+.vscode/
+.idea/
+*.code-workspace
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Secrets
+*.env
+.env.*
+config.json
+credentials.json
+
+# Git-specific
+*.orig
+*.rej
