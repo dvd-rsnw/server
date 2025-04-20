@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 version: '3.8'
 
 services:
@@ -11,3 +12,36 @@ services:
     environment:
       - HOST=server.local
     restart: unless-stopped
+=======
+version: '3'
+services:
+  server:
+    build: .
+    ports:
+      - "4599:4599"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+      - PORT=4599
+    depends_on:
+      - trains
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  trains:
+    build: ./trains
+    volumes:
+      - ./trains:/app
+    environment:
+      - PYTHONPATH=/app
+      - PORT=4599
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+>>>>>>> master
