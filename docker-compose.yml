@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  trains:
+    build: .
+    ports:
+      - "4599:4599"
+    network_mode: "host"  # This allows the container to use server.local hostname
+    volumes:
+      - .:/app
+    environment:
+      - HOST=server.local
+    restart: unless-stopped
