@@ -15,7 +15,7 @@ messages_list: dict[int, MsgPayload] = {}
 
 # Proxy configuration
 MICROSERVICES = {
-    "trains": "http://trains:4599"  # using Docker service name and port from docker-compose
+    "trains": "http://trains:4600"  # using Docker service name and port from docker-compose
 }
 
 async def proxy_request(service: str, request: Request):

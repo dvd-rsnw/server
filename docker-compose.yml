@@ -21,14 +21,14 @@ services:
       context: .
       dockerfile: ./trains/Dockerfile
     ports:
-      - "4599:4599"
+      - "4600:4600"
     volumes:
       - ./trains:/app
       - ./train_types.py:/app/train_types.py
       - ./requirements.txt:/app/requirements.txt
     environment:
       - PYTHONPATH=/app
-      - PORT=4599
+      - PORT=4600
     networks:
       - app-network
     restart: unless-stopped

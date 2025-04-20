@@ -9,7 +9,8 @@ app = FastAPI(
     docs_url="/docs",
     openapi_url="/api/openapi.json",
     servers=[
-        {"url": "http://server.local:4599/trains", "description": "Raspberry Pi deployment"}
+        {"url": "http://server.local:4599/trains", "description": "Raspberry Pi deployment via proxy"},
+        {"url": "http://server.local:4600", "description": "Direct Raspberry Pi access"}
     ]
 )
 

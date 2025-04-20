@@ -104,10 +104,10 @@ COPY . .
 ENV PYTHONUNBUFFERED=1
 
 # Expose the port the app runs on
-EXPOSE 4599
+EXPOSE 4600
 
 # Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "4599", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "4600", "--reload"]
 EOL
         echo -e "${GREEN}✓${NC} Created Dockerfile for trains service"
     else
@@ -165,7 +165,7 @@ PYTHONPATH=/app
 HOST=server.local
 
 # Environment variables for the trains service
-TRAINS_PORT=4599
+TRAINS_PORT=4600
 
 # Add any additional environment variables here
 EOL
