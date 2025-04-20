@@ -153,3 +153,48 @@ When making changes to the codebase:
    git commit -m "Update trains submodule reference"
    git push
    ```
+
+## Raspberry Pi Deployment
+
+This project is configured to be served from `server.local:4599` when deployed on a Raspberry Pi.
+
+### Setting up server.local
+
+1. On your Raspberry Pi, edit the hostname:
+   ```bash
+   sudo hostnamectl set-hostname server
+   ```
+
+2. Edit the hosts file:
+   ```bash
+   sudo nano /etc/hosts
+   ```
+   
+   Add or modify the following line:
+   ```
+   127.0.1.1       server server.local
+   ```
+
+3. Restart the system:
+   ```bash
+   sudo reboot
+   ```
+
+4. Client setup: On any device that needs to access your server, add an entry to the hosts file:
+   
+   **For macOS/Linux:**
+   ```bash
+   sudo nano /etc/hosts
+   ```
+   
+   **For Windows:**
+   ```
+   notepad C:\Windows\System32\drivers\etc\hosts
+   ```
+   
+   Add the following line (replace with your Pi's actual IP address):
+   ```
+   192.168.1.X     server.local
+   ```
+
+5. After deployment, access the application at http://server.local:4599

@@ -3,12 +3,19 @@ from fastapi.responses import JSONResponse
 from models import MsgPayload
 import httpx
 
-app = FastAPI()
+app = FastAPI(
+    title="Server API", 
+    docs_url="/docs",
+    openapi_url="/api/openapi.json",
+    servers=[
+        {"url": "http://server.local:4599", "description": "Raspberry Pi deployment"}
+    ]
+)
 messages_list: dict[int, MsgPayload] = {}
 
 # Proxy configuration
 MICROSERVICES = {
-    "trains": "http://trains:4600"  # using Docker service name and port from docker-compose
+    "trains": "http://trains:4599"  # using Docker service name and port from docker-compose
 }
 
 async def proxy_request(service: str, request: Request):
@@ -44,24 +51,6 @@ async def proxy_request(service: str, request: Request):
 @app.get("/")
 def root() -> dict[str, str]:
     return {"message": "Server API"}
-
-# About page route
-@app.get("/about")
-def about() -> dict[str, str]:
-    return {"message": "This is the about page."}
-
-# Route to add a message
-@app.post("/messages/{msg_name}/")
-def add_msg(msg_name: str) -> dict[str, MsgPayload]:
-    # Generate an ID for the item based on the highest ID in the messages_list
-    msg_id = max(messages_list.keys()) + 1 if messages_list else 0
-    messages_list[msg_id] = MsgPayload(msg_id=msg_id, msg_name=msg_name)
-    return {"message": messages_list[msg_id]}
-
-# Route to list all messages
-@app.get("/messages")
-def message_items() -> dict[str, dict[int, MsgPayload]]:
-    return {"messages": messages_list}
 
 # Proxy all /trains requests to the trains microservice
 @app.api_route("/trains/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])

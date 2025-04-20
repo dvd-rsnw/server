@@ -16,7 +16,7 @@ COPY . .
 ENV PYTHONUNBUFFERED=1
 
 # Expose the port the app runs on
-EXPOSE 4600
+EXPOSE 4599
 
 # Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "4600", "--reload"] 
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "4599", "--reload"] 

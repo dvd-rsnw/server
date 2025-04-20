@@ -4,7 +4,14 @@ from f_train.f_train import router as f_train_router, f_train_manhattan_next
 from g_train.g_train import router as g_train_router, g_train_next_queens
 from train_types import DirectionalTrainArrival
 
-app = FastAPI()
+app = FastAPI(
+    title="Trains API Service",
+    docs_url="/docs",
+    openapi_url="/api/openapi.json",
+    servers=[
+        {"url": "http://server.local:4599/trains", "description": "Raspberry Pi deployment"}
+    ]
+)
 
 # Add routers
 app.include_router(f_train_router)
