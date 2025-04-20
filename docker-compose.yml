@@ -13,6 +13,7 @@ services:
       - trains
     networks:
       - app-network
+    restart: unless-stopped
 
   trains:
     build: ./trains
@@ -23,6 +24,7 @@ services:
       - PORT=4599
     networks:
       - app-network
+    restart: unless-stopped
 
 networks:
   app-network:
