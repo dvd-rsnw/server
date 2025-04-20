@@ -20,6 +20,14 @@ command_exists() {
 check_dependencies() {
     print_header "Checking Dependencies"
     
+    # Check for Git
+    if command_exists git; then
+        echo -e "${GREEN}✓${NC} Git installed: $(git --version)"
+    else
+        echo -e "${RED}✗${NC} Git is not installed. Please install Git."
+        exit 1
+    fi
+    
     # Check for Python
     if command_exists python3; then
         echo -e "${GREEN}✓${NC} Python installed: $(python3 --version)"
@@ -40,6 +48,26 @@ check_dependencies() {
         echo -e "${GREEN}✓${NC} Docker Compose installed"
     else
         echo -e "${RED}✗${NC} Docker Compose is not installed. Please install Docker Compose."
+        exit 1
+    fi
+}
+
+# Set up Git submodules
+setup_git_submodules() {
+    print_header "Setting Up Git Submodules"
+    
+    echo "Initializing and updating Git submodules..."
+    git submodule init
+    if [ $? -eq 0 ]; then
+        git submodule update --recursive
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}✓${NC} Git submodules initialized and updated successfully"
+        else
+            echo -e "${RED}✗${NC} Failed to update Git submodules"
+            exit 1
+        fi
+    else
+        echo -e "${RED}✗${NC} Failed to initialize Git submodules"
         exit 1
     fi
 }
@@ -78,10 +106,13 @@ run_docker() {
 # Main function
 main() {
     print_header "Project Setup"
-    echo "This script will set up the required Docker environment for the project."
+    echo "This script will set up the required Git submodules and Docker environment for the project."
     
     # Check dependencies
     check_dependencies
+    
+    # Set up Git submodules
+    setup_git_submodules
     
     # Set up Docker environment
     setup_docker
