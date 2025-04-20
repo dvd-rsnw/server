@@ -1,0 +1,29 @@
+version: '3'
+services:
+  server:
+    build: .
+    ports:
+      - "4599:4599"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+      - PORT=4599
+    depends_on:
+      - trains
+    networks:
+      - app-network
+
+  trains:
+    build: ./trains
+    volumes:
+      - ./trains:/app
+    environment:
+      - PYTHONPATH=/app
+      - PORT=4599
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
