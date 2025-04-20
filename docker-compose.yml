@@ -1,19 +1,5 @@
-<<<<<<< HEAD
-version: '3.8'
-
-services:
-  trains:
-    build: .
-    ports:
-      - "4599:4599"
-    network_mode: "host"  # This allows the container to use server.local hostname
-    volumes:
-      - .:/app
-    environment:
-      - HOST=server.local
-    restart: unless-stopped
-=======
 version: '3'
+
 services:
   server:
     build: .
@@ -31,12 +17,16 @@ services:
     restart: unless-stopped
 
   trains:
-    build: ./trains
+    build:
+      context: .
+      dockerfile: ./trains/Dockerfile
     volumes:
       - ./trains:/app
+      - ./train_types.py:/app/train_types.py
+      - ./requirements.txt:/app/requirements.txt
     environment:
       - PYTHONPATH=/app
-      - PORT=4599
+      - PORT=4600
     networks:
       - app-network
     restart: unless-stopped
@@ -44,4 +34,3 @@ services:
 networks:
   app-network:
     driver: bridge
->>>>>>> master

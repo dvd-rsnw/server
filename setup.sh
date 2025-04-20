@@ -72,6 +72,85 @@ setup_git_submodules() {
     fi
 }
 
+# Ensure trains service has Dockerfile and main.py
+setup_trains_service() {
+    print_header "Setting Up Trains Service"
+    
+    # Check if trains directory exists
+    if [ ! -d "trains" ]; then
+        echo -e "${RED}✗${NC} Trains directory not found. Creating it..."
+        mkdir -p trains
+    fi
+    
+    # Ensure Dockerfile exists in trains directory
+    if [ ! -f "trains/Dockerfile" ]; then
+        echo "Creating Dockerfile for trains service..."
+        cat > trains/Dockerfile << EOL
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy requirements from parent directory
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Ensure we have the train types module available
+COPY train_types.py .
+
+# Copy the trains application
+COPY . .
+
+# Set Python to not buffer output
+ENV PYTHONUNBUFFERED=1
+
+# Expose the port the app runs on
+EXPOSE 4600
+
+# Command to run the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "4600", "--reload"]
+EOL
+        echo -e "${GREEN}✓${NC} Created Dockerfile for trains service"
+    else
+        echo -e "${GREEN}✓${NC} Trains Dockerfile exists"
+    fi
+    
+    # Ensure main.py exists in trains directory
+    if [ ! -f "trains/main.py" ]; then
+        echo "Creating main.py for trains service..."
+        cat > trains/main.py << EOL
+from typing import List
+from fastapi import FastAPI
+from f_train.f_train import router as f_train_router, f_train_manhattan_next
+from g_train.g_train import router as g_train_router, g_train_next_queens
+from train_types import DirectionalTrainArrival
+
+app = FastAPI()
+
+# Add routers
+app.include_router(f_train_router)
+app.include_router(g_train_router)
+
+@app.get("/")
+def root():
+    return {"message": "Trains API Service"}
+
+@app.get("/fg-northbound-next", response_model=List[DirectionalTrainArrival])
+def fg_trains_northbound_next():
+    f_trains = f_train_manhattan_next()
+    g_trains = g_train_next_queens()
+    all_trains = f_trains + g_trains
+    
+    # Sort by arrival time (using status string which is in format "X mins")
+    sorted_trains = sorted(all_trains, key=lambda x: int(x.status.split()[0]))
+    
+    return sorted_trains[:2]
+EOL
+        echo -e "${GREEN}✓${NC} Created main.py for trains service"
+    else
+        echo -e "${GREEN}✓${NC} Trains main.py exists"
+    fi
+}
+
 # Set up Docker environment
 setup_docker() {
     print_header "Setting Up Docker Environment"
@@ -83,6 +162,9 @@ setup_docker() {
 # Environment variables for the main service
 PORT=4599
 PYTHONPATH=/app
+
+# Environment variables for the trains service
+TRAINS_PORT=4600
 
 # Add any additional environment variables here
 EOL
@@ -106,13 +188,16 @@ run_docker() {
 # Main function
 main() {
     print_header "Project Setup"
-    echo "This script will set up the required Git submodules and Docker environment for the project."
+    echo "This script will set up the required Git submodules, Docker environment, and ensure the trains service is properly configured."
     
     # Check dependencies
     check_dependencies
     
     # Set up Git submodules
     setup_git_submodules
+    
+    # Set up trains service
+    setup_trains_service
     
     # Set up Docker environment
     setup_docker
