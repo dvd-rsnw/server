@@ -1,73 +1,155 @@
-# FastAPI Template
+# NYC Train Status Server
 
-This sample repo contains the recommended structure for a Python FastAPI project. In this sample, we use `fastapi` to build a web application and the `pytest` to run tests.
+This repository contains a FastAPI application that provides real-time MTA train status information, with a focus on the F and G trains. The application is composed of two services: a main server and a trains service (which handles the MTA GTFS feed processing).
 
-For a more in-depth tutorial, see our [Fast API tutorial](https://code.visualstudio.com/docs/python/tutorial-fastapi).
+## Prerequisites
 
-The code in this repo aims to follow Python style guidelines as outlined in [PEP 8](https://peps.python.org/pep-0008/).
+- [Git](https://git-scm.com/downloads) (version 2.13.0 or higher)
+- [Docker](https://www.docker.com/products/docker-desktop) (version 20.10.0 or higher)
+- [Docker Compose](https://docs.docker.com/compose/install/) (version 1.29.0 or higher)
 
-## Set up instructions
+Optional for local development outside Docker:
+- Python 3.11 or higher
 
-### Prerequisites
+## Setup Instructions
 
-- [Docker](https://www.docker.com/products/docker-desktop) and Docker Compose installed
-- Python 3.x (recommended for local development, not required for Docker)
+### Step 1: Clone the Repository
 
-### Quick Setup
+```bash
+git clone https://github.com/yourusername/server.git
+cd server
+```
 
-1. Clone this repository
-2. Navigate to the project directory
-3. Run the setup script:
+### Step 2: Run the Setup Script
+
+The setup script will handle everything for you, including Git submodule initialization:
+
+```bash
+chmod +x setup.sh  # Make sure the script is executable
+./setup.sh
+```
+
+What the setup script does:
+- Checks for required dependencies (Git, Docker, Docker Compose)
+- Initializes and updates Git submodules (critical for the trains service)
+- Creates environment configuration files if needed
+- Offers to start the Docker containers
+
+### Step 3: Verify the Setup
+
+After running the setup script, verify that the application is running:
+
+1. Open a web browser and navigate to http://localhost:4599
+2. For API documentation, visit http://localhost:4599/docs
+
+## Project Structure
+
+- `/` - Main server service (FastAPI application)
+- `trains/` - Train service with MTA GTFS feed processing (Git submodule)
+  - `f_train/` - F train specific implementation
+  - `g_train/` - G train specific implementation
+
+## Manual Setup (if needed)
+
+If you prefer to set up manually or if the setup script encounters issues:
+
+1. Initialize and update Git submodules:
    ```bash
-   ./setup.sh
+   git submodule init
+   git submodule update --recursive
    ```
-   The setup script will:
-   - Check if required dependencies are installed
-   - Create environment configuration files if needed
-   - Offer to start the Docker containers
 
-### Manual Setup
-
-If you prefer to set up manually:
-
-1. Ensure Docker and Docker Compose are installed
 2. Create a `.env` file in the root directory with:
    ```
    PORT=4599
    PYTHONPATH=/app
    ```
+
 3. Start the application:
    ```bash
    ./start.sh
    ```
 
-### Project Structure
+## Troubleshooting
 
-- `server/` - Main application service
-- `trains/` - Train service with MTA GTFS feed processing
-  - `f_train/` - F train specific implementation
-  - `g_train/` - G train specific implementation
+### Git Submodule Issues
 
-### Running in VS Code
+If you're seeing errors related to missing files in the `trains/` directory:
 
-To successfully run this example in VS Code, we recommend the following extensions:
+```bash
+# Reset and update the submodule
+git submodule update --init --recursive --force
+```
+
+### Docker Issues
+
+If Docker containers fail to start:
+
+1. Check if the ports are already in use:
+   ```bash
+   sudo lsof -i :4599
+   ```
+
+2. Stop any conflicting services or change the port in docker-compose.yml
+
+3. Rebuild the Docker containers:
+   ```bash
+   docker-compose down
+   docker-compose up --build
+   ```
+
+### Cache Issues
+
+If you're experiencing unexpected behavior, try clearing Docker cache:
+
+```bash
+docker-compose down
+docker system prune -a --volumes  # WARNING: This removes all unused Docker resources
+docker-compose up --build
+```
+
+## Development Environment
+
+### VS Code Setup
+
+For the best development experience with VS Code, install these extensions:
 
 - [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 - [Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
 - [Python Debugger](https://marketplace.visualstudio.com/items?itemName=ms-python.debugpy)
-- [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance) 
+- [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance)
 
-In addition to these extension there a few settings that are also useful to enable. You can enable to following settings by opening the Settings editor (`Ctrl+,`) and searching for the following settings:
-
+Recommended VS Code settings:
 - Python > Analysis > **Type Checking Mode** : `basic`
 - Python > Analysis > Inlay Hints: **Function Return Types** : `enable`
 - Python > Analysis > Inlay Hints: **Variable Types** : `enable`
 
-## Running the sample
-- Open the template folder in VS Code (**File** > **Open Folder...**)
-- Open the Command Palette in VS Code (**View > Command Palette...**) and run the **Dev Container: Reopen in Container** command.
-- Run the app using the Run and Debug view or by pressing `F5`
-- `Ctrl + click` on the URL that shows up on the terminal to open the running application 
-- Test the API functionality by navigating to `/docs` URL to view the Swagger UI
-- Configure your Python test in the Test Panel or by triggering the **Python: Configure Tests** command from the Command Palette
-- Run tests in the Test Panel or by clicking the Play Button next to the individual tests in the `test_main.py` file
+## Running Tests
+
+```bash
+# Using Docker
+docker-compose exec server pytest
+
+# Local development (if Python is installed)
+cd /path/to/server
+python -m pytest
+```
+
+## Making Changes
+
+When making changes to the codebase:
+
+1. Ensure you commit Docker files (Dockerfile, docker-compose.yml) when modifying Docker configuration
+2. If modifying files in the trains/ directory, remember it's a Git submodule:
+   ```bash
+   cd trains
+   git add .
+   git commit -m "Your commit message"
+   git push
+   
+   # Then update the submodule reference in the main repo
+   cd ..
+   git add trains
+   git commit -m "Update trains submodule reference"
+   git push
+   ```
