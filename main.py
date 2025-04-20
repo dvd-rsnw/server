@@ -6,11 +6,11 @@ from train_types import DirectionalTrainArrival
 
 app = FastAPI()
 
-# Add prefix to all routes
-app.include_router(f_train_router, prefix="/trains")
-app.include_router(g_train_router, prefix="/trains")
+# Add routers without prefix - main server handles prefixing
+app.include_router(f_train_router)
+app.include_router(g_train_router)
 
-@app.get("/trains/fg-trains-northbound-next", response_model=List[DirectionalTrainArrival])
+@app.get("/fg-northbound-next", response_model=List[DirectionalTrainArrival])
 def fg_trains_northbound_next():
     f_trains = f_train_manhattan_next()
     g_trains = g_train_next_queens()

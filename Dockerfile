@@ -9,6 +9,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
+# Set Python to not buffer output
+ENV PYTHONUNBUFFERED=1
+
 # Expose the port the app runs on
 EXPOSE 4599
 
